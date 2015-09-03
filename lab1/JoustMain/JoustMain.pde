@@ -7,7 +7,7 @@ boolean firstTime = true;
 void setup() {
   size(1080, 720);
   count = 0;
-  horse1 = new Horse(50, 50);
+  horse1 = new Horse();
   direction = RIGHT;
 //  frameRate(15);
 
@@ -42,7 +42,7 @@ void setup() {
 
 void draw() {
  ////scale(0.5);
- background(230);
+ //background(230);
  //int xOffset = 0;
 
  //if(count >= 40 || count < 0) {
@@ -56,10 +56,11 @@ void draw() {
   
   
  ////translate(xOffset, 0);
- horse1.drawHorse();
+ 
+ //background(230);
+ //horse1.drawHorse();
   
  //count += direction;
-  
   
 //  strokeWeight(0.5);
 //  for(int x = 0; x < width; x += 10) {
@@ -76,6 +77,7 @@ void mousePressed() {
   }
   if(mouseButton == LEFT) {
   println("curveVertex(" + mouseX + ", " + mouseY + ");");
+  //println(mouseX + ", " + mouseY + ", ");
   strokeWeight(10);
   point(mouseX, mouseY);
   }
