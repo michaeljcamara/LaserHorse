@@ -50,7 +50,50 @@ class Horse {
     pushMatrix();
 
     //translate(bodyOffsetX, bodyOffsetY);
-    //translate(0, sin(frameCount/4.0)*4); // Bob trunk up/down
+    translate(0, sin(frameCount/4.0)*4); // Bob trunk up/down
+
+    // Draw tail
+    pushStyle();
+    pushMatrix();
+    stroke(199, 99, 39);
+    strokeWeight(5);
+    fill(179, 79, 19);
+    
+    beginShape();
+    curveVertex(258, 209);
+    curveVertex(258, 209);
+    curveVertex(129, 243);
+    curveVertex(97, 343);
+    curveVertex(97, 506);
+    curveVertex(105, 469);
+    curveVertex(108, 509);
+    curveVertex(122, 472);
+    curveVertex(121, 510);
+    curveVertex(138, 466);
+    curveVertex(143, 366);
+    curveVertex(155, 320);
+    curveVertex(180, 270);
+    curveVertex(189, 289);
+    endShape(CLOSE);
+    
+    rotate(sin(frameCount/7.0)/30.0);
+    //beginShape();
+    //curveVertex(97, 275);
+    //curveVertex(97, 275);
+    //curveVertex(97, 506);
+    //curveVertex(105, 469);
+    //curveVertex(108, 509);
+    //curveVertex(122, 472);
+    //curveVertex(121, 510);
+    //curveVertex(138, 466);
+    //curveVertex(143, 366);
+    //curveVertex(155, 320);
+    //curveVertex(180, 270);
+    //curveVertex(189, 289);
+    //endShape(CLOSE);
+    
+    popStyle();
+    popMatrix();
     
     //beginShape();
     //curveVertex(187, 161);
@@ -88,7 +131,7 @@ class Horse {
     curveVertex(631, 226);
     curveVertex(685, 206);
     curveVertex(736, 197);
-    curveVertex(856, 277);
+    curveVertex(857, 242); // Upper right corner
     curveVertex(844, 323);
     curveVertex(848, 396);
     curveVertex(809, 449);
@@ -103,9 +146,11 @@ class Horse {
     curveVertex(164, 383);
     curveVertex(171, 295);
     curveVertex(223, 239);
-
     endShape(CLOSE);
-
+    
+    
+    
+    
     popMatrix();
   }
 
@@ -518,9 +563,9 @@ class Horse {
       curveVertex(969, 239);
       curveVertex(913, 231);
       curveVertex(895, 220);  // Ramus
-      curveVertex(883, 204);
-      curveVertex(857, 287);
-      curveVertex(831, 306);
+      curveVertex(880, 204);
+      curveVertex(856, 287);
+      curveVertex(832, 315);
     endShape();
     
     pushStyle();
@@ -528,7 +573,7 @@ class Horse {
     fill(179, 79, 19);
     
     // Draw mane along length of neck
-    for(int i = 0, offset = 0; i < 19; i++, offset += 8) {
+    for(int i = 0, offset = -10; i < 20; i++, offset += 8) {
      beginShape();
        curveVertex(709+ offset, 180 - offset);
        curveVertex(709+ offset, 180 - offset);
@@ -562,7 +607,7 @@ class Horse {
     ellipse(965, 105, 20, 10);
     fill(0);
     ellipseMode(CENTER);
-    ellipse(970, 105, 7, 20);
+    ellipse(975, 105, 10, 17);
     
     //Draw nostril
     ellipse(1047, 190, 25, 20);

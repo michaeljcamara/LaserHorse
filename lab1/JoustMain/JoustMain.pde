@@ -1,17 +1,20 @@
 Horse horse1, horse2;
+Knight knight1;
 float count;
 int direction;
 //final int LEFT = -1, RIGHT = 1;
 boolean firstTime = true;
 
+ArrayList<Horse> horses = new ArrayList<Horse>();
+
 void setup() {
-  size(1080, 720);
+  size(1600, 720);
   count = 0;
   horse1 = new Horse();
+  knight1 = new Knight();
   direction = RIGHT;
-//  frameRate(15);
 
-  //  scale(0.5);
+  //scale(0.5);
   background(230);
   int xOffset = 0;
 
@@ -20,8 +23,6 @@ void setup() {
     direction *= -1;
 
 //     scale(-1.0, 1.0);
-
-  
   }
   
   xOffset = (int) pow(count, 2);
@@ -29,8 +30,13 @@ void setup() {
   
  //translate(xOffset, 0);
 
-  horse1.drawHorse();
   
+  pushMatrix();
+  translate(0, 200);
+  horse1.drawHorse();
+  popMatrix();
+  
+  knight1.drawKnight();
   count += direction;
   
   
@@ -38,10 +44,15 @@ void setup() {
   //for(int x = 0; x < width; x += 10) {
   //  line(x,0,x,height); 
   //}
-}
+  
+    //for(int i = 0; i < 10; i++) {
+    //Horse testHorse = new Horse();
+    //horses.add(testHorse);
+  }
+//}
 
 void draw() {
- ////scale(0.5);
+ //scale(0.5);
  //background(230);
  //int xOffset = 0;
 
