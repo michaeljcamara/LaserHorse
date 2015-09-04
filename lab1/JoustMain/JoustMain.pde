@@ -2,7 +2,7 @@ Horse horse1, horse2;
 Knight knight1;
 float count;
 int direction;
-//final int LEFT = -1, RIGHT = 1;
+final int LEFT = -1, RIGHT = 1;
 boolean firstTime = true;
 
 ArrayList<Horse> horses = new ArrayList<Horse>();
@@ -28,15 +28,15 @@ void setup() {
   xOffset = (int) pow(count, 2);
   
   
- //translate(xOffset, 0);
+ translate(xOffset, 0);
 
   
   pushMatrix();
-  translate(0, 200);
+//  translate(0, 200);
   horse1.drawHorse();
   popMatrix();
   
-  knight1.drawKnight();
+//  knight1.drawKnight();
   count += direction;
   
   
@@ -54,29 +54,33 @@ void setup() {
 void draw() {
  //scale(0.5);
  //background(230);
- //int xOffset = 0;
+ float xOffset = 0;
 
- //if(count >= 40 || count < 0) {
-////    count = 0;
- //  direction *= -1;
-
-////     scale(-1.0, 1.0);
- //}
+// if(count >= 100 || count < 0) {
+//    count = 0;
+//    direction *= -1;
+//
+//    scale(-1.0, 1.0);
+// }
   
- //xOffset = (int) pow(count, 2);
+// xOffset = (int) pow(count, 2);
   
   
- ////translate(xOffset, 0);
+// translate(xOffset *.1, 0);
+ translate(0, 150);
  
- //background(230);
- //horse1.drawHorse();
+ xOffset = sin(frameCount/100.0)*400;
+// if(xOffset < 400) {
+//   scale(-1.0, 1.0);
+// }
+ println(xOffset);
+ 
+ translate(sin(frameCount/100.0)*400, 0);
+ scale(0.35);
+ background(230);
+ horse1.drawHorse();
   
- //count += direction;
-  
-//  strokeWeight(0.5);
-//  for(int x = 0; x < width; x += 10) {
-//    line(x,0,x,height); 
-//  }
+ count += direction;
   
 }
 

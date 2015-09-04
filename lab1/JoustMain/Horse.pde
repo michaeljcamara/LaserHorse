@@ -1,6 +1,7 @@
 class Horse {
 
   int x, y;
+  Knight knight;
   
 
   //Horse(int x, int y) {
@@ -14,6 +15,7 @@ class Horse {
     x = 50;
     y = 50;
     fill(139, 69, 19);
+    knight = new Knight();
   }
 
   void drawHorse() {
@@ -41,6 +43,8 @@ class Horse {
     drawHindForeLeg();
     drawFrontForeLeg();
     drawHead();
+    
+    knight.drawKnight(); // Add parameter for color/pattern
   }
 
   void drawTrunk() {

@@ -5,8 +5,12 @@ class Knight {
 
   void drawKnight() {
     pushStyle();
+    pushMatrix();
     fill(125);
     curveTightness(0.75);
+    
+//    translate(0, -200);
+    translate(0, sin(frameCount/4.0)*4 - 200); // Bob knight up/down with horse
 
 
     //Legs
@@ -45,7 +49,7 @@ class Knight {
 
     // Lance
     pushStyle();
-    fill(255,0,0);
+    fill(255, 0, 0);
     beginShape();
     vertex(189, 260);
     vertex(189, 300);
@@ -120,20 +124,24 @@ class Knight {
     curveVertex(571, 170);
     endShape(CLOSE);
 
-// Visor
-pushStyle();
-strokeWeight(5);
-beginShape();
-vertex(615, 79);
- vertex(520, 58);    // left up
-  vertex(597, 150);  // bottom right
-endShape(CLOSE);
+    // Visor
+    pushStyle();
+    strokeWeight(5);
+    beginShape();
+    vertex(615, 79);
+    vertex(520, 58);    // left up
+    vertex(597, 150);  // bottom right
+    endShape(CLOSE);
 
-line(553, 66, 553, 98);
-line(576, 72, 576, 123);
-line(598, 76, 598, 140);
-popStyle();
+    line(553, 66, 553, 98);
+    line(576, 72, 576, 123);
+    line(598, 76, 598, 140);
+    popStyle();
 
     popStyle();
+    popMatrix();
+    
+    curveTightness(0);
   }
 }
+
