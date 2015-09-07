@@ -1,9 +1,15 @@
 Horse horse1, horse2;
 Knight knight1;
-float count;
+int count;
 int direction;
 final int LEFT = -1, RIGHT = 1;
 boolean firstTime = true;
+boolean reachedMiddle = false;
+float velocity = 0;
+float acceleration = 0;
+float initialVelocity = 0;
+float xOffset = 0;
+float reverseOffset = 0;
 
 ArrayList<Horse> horses = new ArrayList<Horse>();
 
@@ -12,76 +18,103 @@ void setup() {
   count = 0;
   horse1 = new Horse();
   knight1 = new Knight();
+  horse2 = new Horse();
   direction = RIGHT;
-
-  //scale(0.5);
+  
   background(230);
-  int xOffset = 0;
-
-  if(count >= 40 || count < 0) {
-//    count = 0;
-    direction *= -1;
-
-//     scale(-1.0, 1.0);
-  }
-  
-  xOffset = (int) pow(count, 2);
-  
-  
- translate(xOffset, 0);
-
   
   pushMatrix();
-//  translate(0, 200);
-  horse1.drawHorse();
+
+  //horse1.drawHorse();
   popMatrix();
   
-//  knight1.drawKnight();
   count += direction;
-  
-  
-  //strokeWeight(0.5);
-  //for(int x = 0; x < width; x += 10) {
-  //  line(x,0,x,height); 
-  //}
-  
-    //for(int i = 0; i < 10; i++) {
-    //Horse testHorse = new Horse();
-    //horses.add(testHorse);
   }
-//}
 
 void draw() {
- //scale(0.5);
- //background(230);
- float xOffset = 0;
+  background(0, 200, 0);
+  
+ if(count == 0) {
+  velocity = 0;
+  initialVelocity = 0;
+  acceleration = 0;
+  direction = RIGHT;
+ }
+ else if(count == 179) {
+  velocity = 0;
+  initialVelocity = 0;
+  acceleration = 0;
+  direction = LEFT;
+  reverseOffset = xOffset;
+ }
+ 
+ if(count < 89) {
+   acceleration++;
+   count++;
+ }
+ else if(count < 179) {
+   acceleration--;
+   count++;
+ }
+ else if(count < 269) {
+  acceleration--;
+  count++;
+ }
+ else if(count < 359) {
+  acceleration++;
+  count++;
+ }
 
-// if(count >= 100 || count < 0) {
-//    count = 0;
-//    direction *= -1;
-//
-//    scale(-1.0, 1.0);
-// }
-  
-// xOffset = (int) pow(count, 2);
-  
-  
-// translate(xOffset *.1, 0);
- translate(0, 150);
+ velocity = initialVelocity + acceleration * ((count % 182) / 180.0) * 1.2;
+ xOffset = initialVelocity * (count % 182 /10.0) + (0.5 * acceleration) * pow(count % 182 /10.0, 2);
  
- xOffset = sin(frameCount/100.0)*400;
-// if(xOffset < 400) {
-//   scale(-1.0, 1.0);
-// }
- println(xOffset);
+ initialVelocity = velocity; 
  
- translate(sin(frameCount/100.0)*400, 0);
- scale(0.35);
- background(230);
- horse1.drawHorse();
-  
- count += direction;
-  
+ if(direction == RIGHT) {
+   
+   pushMatrix();
+   translate(xOffset / 100.0, 150);
+   scale(0.2, 0.2);
+   
+   horse1.drawHorse();
+   popMatrix();
+   
+   
+   pushMatrix();
+   //translate(-xOffset / 100.0 - reverseOffset / 100.0 - 250, 550);
+   translate(-xOffset / 100.0 + 1050, 250);
+   scale(-0.2, 0.2);
+   
+   horse2.drawHorse();
+   
+   popMatrix();
+   
+ }
+ else if(direction == LEFT) {
+
+   pushMatrix();
+   translate(xOffset / 100.0 + reverseOffset / 100.0 + 250, 150);
+   scale(-0.2, 0.2);
+   
+   horse1.drawHorse();
+   popMatrix();
+   
+   pushMatrix();
+   translate(-xOffset / 100.0, 250);
+   scale(0.2, 0.2);
+   
+   horse2.drawHorse();
+   
+   popMatrix();
+   
+   
+ }
+ 
+ //scale(0.2, 0.2);
+ 
+ 
+ 
+ count = frameCount % 360;
 }
 
 void mousePressed() {
