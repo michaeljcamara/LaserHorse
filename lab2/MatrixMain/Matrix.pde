@@ -17,13 +17,14 @@ class Matrix {
   float[][] matrixArray;  // 2D array representation of matrix values
 
   // Initialize the matrix with the indicated number of rows and columns
+  // NOTE: All elements are initialized to zero by default
   Matrix(int rows, int columns) {
     this.rows = rows;
     this.columns = columns;
 
     matrixArray = new float[rows][columns];
   } 
-  
+
   // Retrieve the number of rows in this matrix
   int getRows() {
     return rows;
@@ -68,8 +69,8 @@ class Matrix {
     Matrix updatedMatrix = new Matrix(m1.getRows(), m1.getColumns());
 
     // Iterate through the rows and columns of each matrix
-    for (int row = 0; row < m1.getRows(); row++) {
-      for (int column = 0; column < m1.getColumns(); column++) {
+    for (int row = 0; row < m1.getRows (); row++) {
+      for (int column = 0; column < m1.getColumns (); column++) {
 
         // Add together matching elements using the same row/column indices
         float sum = m1.getValue(row, column) + m2.getValue(row, column);
@@ -81,6 +82,35 @@ class Matrix {
 
     return updatedMatrix;
   }
+  
+  // Generate a new matrix from subtracting two matrices of equal dimensions
+  Matrix subtractMatrices(Matrix m1, Matrix m2) {
+
+    // Ensure that the matrices have the same dimensions
+    if (!m1.haveSameDimensions(m1, m2)) {
+      println("These matrices do not share the same number of rows and columns.");
+      println("Matrix addition cannot be performed");
+      return null;
+    }
+
+    // Create an initially empty matrix to hold new values from subtraction
+    Matrix updatedMatrix = new Matrix(m1.getRows(), m1.getColumns());
+
+    // Iterate through the rows and columns of each matrix
+    for (int row = 0; row < m1.getRows (); row++) {
+      for (int column = 0; column < m1.getColumns (); column++) {
+
+        // Subtract matching elements using the same row/column indices
+        float difference = m1.getValue(row, column) - m2.getValue(row, column);
+
+        // Update the addition matrix with this value
+        updatedMatrix.setValue(row, column, difference);
+      }
+    } 
+
+    return updatedMatrix;
+  }
+  
 
   // Generate a new matrix from multiplying two matrices, where the number of columns
   // from m1 equal the number of rows from m2
@@ -97,12 +127,12 @@ class Matrix {
     Matrix updatedMatrix = new Matrix(m1.getRows(), m2.getColumns());
 
     // Iterate through all rows and columns of the matrices
-    for (int row = 0; row < m1.getRows(); row++) {
+    for (int row = 0; row < m1.getRows (); row++) {
 
       // Copy the entire row of the first matrix at the current index 
       Matrix rowVector = m1.getRowVector(row);
 
-      for (int column = 0; column < m2.getColumns(); column++) {
+      for (int column = 0; column < m2.getColumns (); column++) {
 
         // Copy the entire column of the second matrix at the current index
         Matrix columnVector = m2.getColumnVector(column);
@@ -131,10 +161,10 @@ class Matrix {
 
     // Iterate through each index of the rowVector and columnVector
     float product = 0;
-    for (int i = 0; i < rowVector.getColumns(); i++) {
+    for (int i = 0; i < rowVector.getColumns (); i++) {
       float rowValue = rowVector.getValue(0, i);
       float columnValue = columnVector.getValue(i, 0);
-      
+
       // Multiply each pair of values and add to running total
       product += rowValue * columnValue;
     }
@@ -151,7 +181,7 @@ class Matrix {
 
     return rowVector;
   }
-  
+
   // Retrieve the column at the given index, represented as a Matrix object
   Matrix getColumnVector(int column) {
     Matrix columnVector = new Matrix(rows, 1);
@@ -162,13 +192,37 @@ class Matrix {
     return columnVector;
   }
 
+  // Check to see if two matrices are exactly equal
+  boolean isEqual(Matrix m1, Matrix m2) {
+    
+    // Do quick check comparing rows and columns of both matrices
+    if(m1.getRows() != m2.getRows() || m1.getColumns() != m2.getColumns()) {
+      return false;
+    }
+    
+    // Check every value at every index for both matrices
+    // NOTE: From previous check, m1 & m2 have equal number of rows and columns
+    for(int row = 0; row < m1.getRows(); row++) {
+      for(int column = 0; column < m1.getColumns(); column++) {
+        float m1Value = m1.getValue(row, column);
+        float m2Value = m2.getValue(row, column);
+        
+        if(m1Value != m2Value) {
+          return false;
+        }
+      }
+    }
+    
+    // Will only return true if all m1 and m2 values match from above iteration
+    return true;
+  }
 
   // Display this matrix using a standard row/column representation
   String toString() {
     String output = "";
     for (int i = 0; i < rows; i++ ) {
       for (int j = 0; j < columns; j++) {
-        output += (matrixArray[i][j] + " ");
+        output += (matrixArray[i][j] + "\t");
       }
       output += "\n";
     } 
@@ -176,3 +230,4 @@ class Matrix {
     return output;
   }
 }
+
