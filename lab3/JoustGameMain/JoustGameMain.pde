@@ -122,10 +122,20 @@ void draw() {
   translate(0,300);
   scale(0.2, 0.2);
   
+  //detector.addHitBox(new HitBox("obstacle", 400, 0, 400, 400));
+  Ring ring = new Ring(400, -800, 400, 400);
+  detector.addHitBox(new HitBox(ring, "obstacle", 400, -800, 400, 400));
+  fill(200);
+//  rect(400,0,400,400);
+  
+  //Ring ring = new Ring(1600, 0, 400, 400);
+
+  
   if(direction == LEFT_DIR) {
     scale(-1.0, 1.0);
-    translate(-1080,0);
+    translate(-1200,0);
   }
+
     
   translate(0, yOffset);
   
@@ -135,8 +145,10 @@ void draw() {
   
   fill(122, 50);
   rect(0, -200, 1080, 920);
-  
   rect(2100, -500, 300, 300);
+  
+  
+  detector.detectCollisions();
   
   //println("Y-Offset = " + yOffset);
   //println("Velocity = " + velocity);

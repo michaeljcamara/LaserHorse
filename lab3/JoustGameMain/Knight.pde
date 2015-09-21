@@ -92,7 +92,7 @@ class Knight {
     ///////////////////////////////////////////////////
     fill(200, 50);
     rect(1089, 234, 200, 75);
-    detector.addHitBox(new HitBox("lance", 1089, 234, 200, 75)); 
+    detector.addHitBox(new HitBox(null, "lance", 1089 + (direction* xOffset), 234 + yOffset, 200, 75)); 
     ///////////////////////////////////////////////////
     
     popStyle();
