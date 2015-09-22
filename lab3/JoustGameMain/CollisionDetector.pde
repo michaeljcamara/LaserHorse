@@ -40,8 +40,8 @@ class CollisionDetector {
     
     // If a coin was removed, create new coins such that 3 always appear on screen
     while(coins.size() < 3) {
-      // Create new coin with random positions and sizes
-      Coin replacementCoin = new Coin(random(0, 7000), random(-1500, 0), random(125, 200), random(125, 200));
+      // Create new coin with random position and size
+      Coin replacementCoin = new Coin(random(0, 5800), random(-1500, 0), random(125, 200), random(125, 200));
       coins.add(replacementCoin);
       detector.addHitBox(new HitBox(replacementCoin));
     }

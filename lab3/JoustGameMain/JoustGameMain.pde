@@ -11,71 +11,98 @@
 //          possible within 60 seconds!
 //********************************************************************************
 
-
 import java.text.*;
 import java.io.*;
 
-int score = 0;
+// Create a controllable horse and rider!
+Horse horse1;
 
-Horse horse1, horse2; // Primary mobile elements of the scene
-int count = 0;
+// Variables for x movement
+float acceleration = 0, velocity = 0, initialVelocity = 0, xOffset = 0;
 
-final int TOP = 1, BOTTOM = -1;  // Indicate if horse is in top/bottom lane
-
-float acceleration = 0;
-float velocity = 0;
-float initialVelocity = 0;
-float xOffset = 0;
-
+// variables for y movement
 float yVelocity = 0, yAcceleration = 0, yOffset = 0, yInitialVelocity = 0, rotationOffset = 0;
+boolean isJumping = false, isMoving = false, maxHeightReached = false, minHeightReached = false, isKnightJumping = false, 
+maxKnightHeightReached = false;
+float jumpHeight = 0, yKnightOffset = 0, yKnightAcceleration = 0, yKnightVelocity = 0, yKnightInitialVelocity = 0;
 
+// Misc. constants for horse movement
 final int RIGHT_DIR = 1, LEFT_DIR = -1;
-int direction = RIGHT_DIR;
-
-boolean isJumping = false, isMoving = false, maxHeightReached = false, minHeightReached = false, isKnightJumping = false;
-float jumpHeight = 0;
-
-float yKnightOffset = 0, yKnightAcceleration = 0, yKnightVelocity = 0, yKnightInitialVelocity = 0;
-boolean maxKnightHeightReached = false;
-
 final int MAX_JUMP_HEIGHT = -500;
 final int MIN_JUMP_HEIGHT = -250;
-
 final int INVERSION_OFFSET = -1200;
+final int TOP = 1, BOTTOM = -1;
 
+// Direction horse is moving
+int direction = RIGHT_DIR;
+
+// Create collision detector (detects when lance touches a coin)
 CollisionDetector detector;
 
+// List containing coins, used for determining score
 ArrayList<Coin> coins = new ArrayList<Coin>();
 
+// Start time for this game
 long startTime;
 
+// Static background (sunset with field of grass)
 CustomBackground cBackground;
+
+// Keep list of previous high scores and their associated names
+ArrayList<Integer> scores;
+ArrayList<String> names;
+
+// Current score for the player
+int score = 0;
+
+// The lowest score that is on the high score list
+int lowestScore;
+
+// The player's rank on the high score list
+int rank;
+
+// Initials of the player
+String initials = "";
+
+// Indicate if the game has finished
+boolean gameOver = false;
 
 void setup() {
 
-  size(1440, 600);
-  // Generate custom colors for horses/knights
+  // Set size of screen
+  size(1200, 600);
+
+  // Generate custom colors for horse/knight
   color crimson = color(160, 16, 16);
-  color brightRed = color(255, 0, 0);;
+  color brightRed = color(255, 0, 0);
+  ;
   color darkBrown = color(139, 69, 19);
 
-  // Create two horses: one in the top lane, one in the bottom lane
+  // Create one horse with red colors
   horse1 = new Horse(darkBrown, crimson, brightRed, TOP);
 
-  
-  // Draw static background once full, then save image and keep loading that image
+  // Draw static background once fully, then save image and keep loading that image
   cBackground = new CustomBackground();
   cBackground.drawBackground();
 
   // Create collision detector
   detector = new CollisionDetector();
-  
+
   // Begin timer!
   startTime = System.currentTimeMillis();
+
+  // Retrieve the high score list to compare with score this game
+  try {
+    getHighScores();
+  }
+  catch(Exception e) {
+    println("Could not access highScores.txt");
+  }
 }
 
-
 void draw() {
+
+  pushMatrix();
   // Draw static background
   cBackground.drawBackground();
 
@@ -90,22 +117,22 @@ void draw() {
 
   long currentTime = System.currentTimeMillis();
   Long elapsedTime = (currentTime - startTime);
-  Float remainingTime = 4.0 - elapsedTime / 1000.0;
+  Float remainingTime = 60.0 - elapsedTime / 1000.0;
 
-  text("Time Remaining: " + (new DecimalFormat("##.##").format(remainingTime)), 800, 50);
+  text("Time Remaining: " + (new DecimalFormat("##.##").format(remainingTime)), 600, 50);
   popStyle();
-  
+
   // End game if no time remaining on clock
-  if(remainingTime <= 0) {
-    try{
+  if (remainingTime <= 0) {
+    try {
       endGame();
-    } catch (Exception e) {
+    } 
+    catch (Exception e) {
       System.out.println("Could not load high score list");
     }
-    
   }
 
-  // Control movement of horse
+  // Control movement of horse **************************
   // Control acceleration in x direction
   if (isMoving == true) {
     if (direction == RIGHT_DIR) {
@@ -133,7 +160,7 @@ void draw() {
     maxHeightReached = false;
     minHeightReached = false;
   }
-  
+
   // Control acceleration in y direction
   if ((isJumping == true && maxHeightReached == false) || (isJumping == false && minHeightReached == false && yAcceleration < 0) ) {
     yAcceleration -= 4;
@@ -163,7 +190,7 @@ void draw() {
   scale(0.2, 0.2);
 
   // Draw all currently created coins (3 should always appear)
-  for (int i = 0; i < coins.size(); i++) {
+  for (int i = 0; i < coins.size (); i++) {
     coins.get(i).drawCoin();
   }
 
@@ -172,7 +199,7 @@ void draw() {
     scale(-1.0, 1.0);
     translate(INVERSION_OFFSET, 0);
   }
-  
+
   // Translate the horse to the correct position, then draw
   translate(xOffset * direction, yOffset);
   horse1.drawHorse();
@@ -184,9 +211,10 @@ void draw() {
     acceleration = +30;
   }
 
-  
+  popMatrix();
 }
 
+// Control movement/jumping when the appropriate keys are pressed
 void keyPressed() {
 
   if (keyCode == RIGHT) {
@@ -204,6 +232,7 @@ void keyPressed() {
   }
 }
 
+// Stop movement/jumping when the appropriate keys are released
 void keyReleased() {
   if (keyCode == RIGHT && direction == RIGHT_DIR || keyCode == LEFT && direction == LEFT_DIR) {
     isMoving = false;
@@ -212,34 +241,115 @@ void keyReleased() {
   }
 }
 
-void endGame() throws IOException {
+// Retrieve the current score list, including the scores and their corresponding names
+void getHighScores() throws IOException {
   File highScoreFile = new File("highScores.txt");
-  //FileWriter writer = new FileWriter(highScoreFile);
-  
+
   BufferedReader reader = createReader("highScores.txt");
-  
+
   String highScoreList = reader.readLine();
+
   Scanner scan = new Scanner(highScoreList);
   scan.useDelimiter(";");
-  
-  ArrayList<String> scores = new ArrayList<String>();
+
+  ArrayList<Integer> scores = new ArrayList<Integer>();
   ArrayList<String> names = new ArrayList<String>();
-  
-  while(scan.hasNext()) {
+
+  while (scan.hasNext ()) {
     names.add(scan.next());
-    scores.add(scan.next());
+    scores.add(scan.nextInt());
   }
-  int rank = 0;
-  for(int i = 0; i < scores.size(); i++) {
-    if(score > Integer.parseInt(scores.get(i))) {
-      rank = i+1;
+
+  lowestScore = scores.get(9);
+}
+
+// Retrieve the players rank in the high score list
+int getRank() {
+  int rank = 99;
+  for (int i = 0; i < scores.size (); i++) {
+    if (score > scores.get(i)) {
+      rank = i;
+      break;
     }
   }
+
+  return rank;
+}
+
+
+// THIS METHOD IS STILL IN PROGRESS!!
+void endGame() throws IOException {
+
+  gameOver = true;
+  if (score > lowestScore) {
+    //rank = getRank();
+
+    pushStyle();
+    pushMatrix();
+    fill(0);
+    textSize(50);
+    textAlign(CENTER, CENTER);
+    text("You got a high score!", width/2, height/6);
+    popStyle();
+    popMatrix();
+  }
+  else {
+    pushStyle();
+    pushMatrix();
+    fill(0);
+    textSize(50);
+    textAlign(CENTER, CENTER);
+    text("You did not get a high score ='(", width/2, height/6);
+    popStyle();
+    popMatrix();
+  }
+  /*
+  String name = "";
+  Scanner scanName = new Scanner(System.in);
+  if (rank <= 9) {
+    //println("Congrats! Enter your initials!");
+
+    while (name.length () < 3) {
+
+      if (keyPressed) {
+        char asdasd = key;
+        println(asdasd);
+      }
+    }
+  }
+
+  if (rank == 9) {
+    scores.set(9, score);
+    names.set(9, name);
+  } else {
+    scores.set(9, score);
+    names.set(9, name);
+
+    for (int i = scores.size () - 1; i > rank; i--) {
+      int scoreTemp1 = scores.get(i);
+      int scoreTemp2 = scores.get(i-1);
+      String nameTemp1 = names.get(i);
+      String nameTemp2 = names.get(i-1);
+
+      scores.set(i, scoreTemp2);
+      scores.set(i-1, scoreTemp1);
+      names.set(i, nameTemp2);
+      names.set(i-1, nameTemp1);
+    }
+  }
+
   System.out.println(scores);
   System.out.println(names);
-  
-  scan.close();
+  println(rank);
+
+  //scan.close();
   //writer.close();
-  
+
+  fill(0);
+  rect(500, 0, 500, 500);
+
+  //noLoop();
+  */
   noLoop();
 }
+
