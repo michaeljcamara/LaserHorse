@@ -1,14 +1,3 @@
-//*********************************************************************************
-// Honor Code: The work I am submitting is a result of my own thinking and efforts.
-// Michael Camara
-// CMPSC 382 Fall 2015 (Professor Wenskovitch)
-// Lab # 1
-// Date: 9/1/15
-// 
-// Purpose: Create a scene that includes animation.  The scene depicted here is
-//          a medieval jousting match between two rival knights.
-//********************************************************************************
-
 /** This class represents a simple knight, or jouster, who is placed on top of a
 /*  horse.  The knight is overall static, but the cape and lance move slightly
 /*  with each joust.  The knight also bobs up/down counter to the horse's rhythm. */
@@ -36,8 +25,13 @@ class Knight {
     curveTightness(0.75);  // Ensure rigid lines, due to armor
 
     // Bob knight up/down with horse
-    translate(0, cos(frameCount/4.0)*8 - 200);
-
+    if(abs(acceleration) > 5) {
+      translate(0, cos(-acceleration / 5.0 - frameCount/20.0) * 12 - 200);
+    }
+    else {
+      translate(0, sin(-frameCount/20.0) * 8 - 200);
+    }
+    
     //Legs
     beginShape();
       curveVertex(477, 336);
@@ -74,26 +68,20 @@ class Knight {
     pushMatrix();
     fill(lanceColor);  // Custom lance color from constructor
     
-    if(position == TOP) {
-      rotate(abs(sin(radians(acceleration)) / 8.0));
-      translate(0,-40);
-    }
-    else {
-      rotate(-abs(sin(radians(acceleration)) / 8.0));
-      translate(0,40);
-    }
+    translate(0,-40);
     beginShape();
       vertex(189, 260);
       vertex(189, 300);
       vertex(1289, 285);
       vertex(1289, 275);
     endShape(CLOSE);
-    
-    ///////////////////////////////////////////////////
-    fill(200, 50);
-    rect(1089, 234, 200, 75);
-    detector.addHitBox(new HitBox(null, "lance", 1089 + (direction* xOffset), 234 + yOffset, 200, 75)); 
-    ///////////////////////////////////////////////////
+     
+    // Add hitbox for the end of the lance.
+    // If this hitbox contacts a coin, the player gets a point and the coin disappears
+    if(direction == LEFT_DIR)
+      detector.addHitBox(new HitBox(this, 1089 + INVERSION_OFFSET + (xOffset), yOffset, 200, 75));
+    else
+      detector.addHitBox(new HitBox(this, 1089 + (direction * xOffset), yOffset, 200, 75));
     
     popStyle();
     popMatrix();
@@ -126,7 +114,7 @@ class Knight {
     translate(575, 205);
 
     // Simulate cape moving with the wind during travel
-    rotate(abs(sin(radians(velocity)/26.0)));
+    rotate(abs(sin(radians(acceleration))));
 
     fill(capeColor); // Custom cape color from constructor
     beginShape();

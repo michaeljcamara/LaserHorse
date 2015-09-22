@@ -2,17 +2,20 @@
 // Honor Code: The work I am submitting is a result of my own thinking and efforts.
 // Michael Camara
 // CMPSC 382 Fall 2015 (Professor Wenskovitch)
-// Lab # 1
-// Date: 9/1/15
+// Lab # 3
+// Due Date: 9/22/15
 // 
-// Purpose: Create a scene that includes animation.  The scene depicted here is
-//          a medieval jousting match between two rival knights.
+// Purpose: Modify scene from Lab 1 to include different transformations.
+//          I kept the Horse and Knight classes more-or-less the same, but changed
+//          the scenery and added controls for a game to collect the most coins
+//          possible within 60 seconds!
 //********************************************************************************
 
-/** The setup() and draw() methods are controlled here.  The CustomBackground is
-/*  first created, and then the horses are created and continually moved horizontally 
-/*  across the screen using different transforms.  This is meant to represent
-/*  a medieval jousting scene, with two knights battling for fame and glory! */
+
+import java.text.*;
+import java.io.*;
+
+int score = 0;
 
 Horse horse1, horse2; // Primary mobile elements of the scene
 int count = 0;
@@ -24,294 +27,219 @@ float velocity = 0;
 float initialVelocity = 0;
 float xOffset = 0;
 
-float yVelocity = 0, yAcceleration = 0, yOffset = 0, yInitialVelocity = 0;
+float yVelocity = 0, yAcceleration = 0, yOffset = 0, yInitialVelocity = 0, rotationOffset = 0;
 
 final int RIGHT_DIR = 1, LEFT_DIR = -1;
 int direction = RIGHT_DIR;
 
-boolean isJumping = false, isMoving = false, maxHeightReached = false, minHeightReached = false;
+boolean isJumping = false, isMoving = false, maxHeightReached = false, minHeightReached = false, isKnightJumping = false;
 float jumpHeight = 0;
 
-final int MAX_JUMP_HEIGHT = -300;
-final int MIN_JUMP_HEIGHT = -150;
+float yKnightOffset = 0, yKnightAcceleration = 0, yKnightVelocity = 0, yKnightInitialVelocity = 0;
+boolean maxKnightHeightReached = false;
+
+final int MAX_JUMP_HEIGHT = -500;
+final int MIN_JUMP_HEIGHT = -250;
+
+final int INVERSION_OFFSET = -1200;
 
 CollisionDetector detector;
 
+ArrayList<Coin> coins = new ArrayList<Coin>();
+
+long startTime;
+
+CustomBackground cBackground;
 
 void setup() {
-  
-  size(1440,600);
-    // Generate custom colors for horses/knights
-  color crimson = color(160, 16, 16);
-  color navy = color(14, 46, 201);
-  color brightRed = color(255, 0, 0);
-  color brightBlue = color(0, 0, 255);
-  color darkBrown = color(139, 69, 19);
-  color lightBrown = color(169, 99, 49);
-  color lightGrey = color(200);
 
-  detector = new CollisionDetector();
+  size(1440, 600);
+  // Generate custom colors for horses/knights
+  color crimson = color(160, 16, 16);
+  color brightRed = color(255, 0, 0);;
+  color darkBrown = color(139, 69, 19);
 
   // Create two horses: one in the top lane, one in the bottom lane
   horse1 = new Horse(darkBrown, crimson, brightRed, TOP);
+
   
-  // Ensure Processing window has focus for key presses
-  frame.requestFocus();
-  frame.toFront();
+  // Draw static background once full, then save image and keep loading that image
+  cBackground = new CustomBackground();
+  cBackground.drawBackground();
+
+  // Create collision detector
+  detector = new CollisionDetector();
   
+  // Begin timer!
+  startTime = System.currentTimeMillis();
 }
 
 
 void draw() {
-  background(200);
+  // Draw static background
+  cBackground.drawBackground();
+
+  // Immediately detect for any collisions (i.e. if lance has contacted a coin);
+  detector.detectCollisions();
+
+  // Create timer and score card
+  pushStyle();
+  fill(0, 255, 0);
+  textSize(50);
+  text("Score: " + score, 50, 50);
+
+  long currentTime = System.currentTimeMillis();
+  Long elapsedTime = (currentTime - startTime);
+  Float remainingTime = 4.0 - elapsedTime / 1000.0;
+
+  text("Time Remaining: " + (new DecimalFormat("##.##").format(remainingTime)), 800, 50);
+  popStyle();
   
-  if(isMoving == true) {
-    if(direction == RIGHT_DIR) {
-      acceleration += 2;
+  // End game if no time remaining on clock
+  if(remainingTime <= 0) {
+    try{
+      endGame();
+    } catch (Exception e) {
+      System.out.println("Could not load high score list");
     }
-    else if(direction == LEFT_DIR) {
-      acceleration -= 2;
-    }
-  }  
-  else if(isMoving == false) {
-    if(acceleration < 0) {
-      acceleration += 1;
-    }
-    else if(acceleration > 0) {
-      acceleration -= 1;
-    }
-  }
-  
-  if(yOffset < MIN_JUMP_HEIGHT) {
-    minHeightReached = true;
     
-    if(yOffset < MAX_JUMP_HEIGHT) {
-      maxHeightReached = true;    
+  }
+
+  // Control movement of horse
+  // Control acceleration in x direction
+  if (isMoving == true) {
+    if (direction == RIGHT_DIR) {
+      acceleration += 2.0;
+    } else if (direction == LEFT_DIR) {
+      acceleration -= 2.0;
+    }
+  } else if (isMoving == false) {
+    if (abs(acceleration) <= 1.5)
+      acceleration = 0;
+    else if (acceleration < 0) {
+      acceleration += 1.5;
+    } else if (acceleration > 0) {
+      acceleration -= 1.5;
     }
   }
-  
-  else if(yOffset >= 0) {
+
+  // Ensure that horse always jumps a minimum height, and never exceeds a maximum height
+  if (yOffset < MIN_JUMP_HEIGHT) {
+    minHeightReached = true;
+    if (yOffset < MAX_JUMP_HEIGHT) {
+      maxHeightReached = true;
+    }
+  } else if (yOffset >= 0) {
     maxHeightReached = false;
     minHeightReached = false;
   }
   
-  if((isJumping == true && maxHeightReached == false) || (isJumping == false && minHeightReached == false && yAcceleration < 0) ) {
-    yAcceleration -= 2;
-  }
-  else if(isJumping == false && yOffset != 0 || maxHeightReached == true) {
+  // Control acceleration in y direction
+  if ((isJumping == true && maxHeightReached == false) || (isJumping == false && minHeightReached == false && yAcceleration < 0) ) {
+    yAcceleration -= 4;
+  } else if (isJumping == false && yOffset != 0 || maxHeightReached == true) {
     yAcceleration += 2;
   }
-  
+
+  // Adjust x and y velocity and ultimately their offsets, based on simple movement equations
   velocity = initialVelocity + acceleration;
   xOffset = initialVelocity + (0.5 * acceleration);
   initialVelocity = velocity; 
-  
+
   yVelocity = yInitialVelocity + yAcceleration;
   yOffset = yInitialVelocity + (0.5 * yAcceleration);
   yInitialVelocity = yVelocity;
-  
-  if(yOffset > 0) {
+
+  // Ensure that all vertical movement is stopped once horse hits the "floor"
+  if (yOffset > 0) {
     yVelocity = 0;
     yInitialVelocity = 0;
     yAcceleration = 0;
     yOffset = 0;
   }
-  
-  
-  
-  translate(0,300);
+
+  // Use the above calculatons to control where the horse appears on the screen
+  translate(0, 400);
   scale(0.2, 0.2);
-  
-  //detector.addHitBox(new HitBox("obstacle", 400, 0, 400, 400));
-  Ring ring = new Ring(400, -800, 400, 400);
-  detector.addHitBox(new HitBox(ring, "obstacle", 400, -800, 400, 400));
-  fill(200);
-//  rect(400,0,400,400);
-  
-  //Ring ring = new Ring(1600, 0, 400, 400);
 
-  
-  if(direction == LEFT_DIR) {
+  // Draw all currently created coins (3 should always appear)
+  for (int i = 0; i < coins.size(); i++) {
+    coins.get(i).drawCoin();
+  }
+
+  // Control whether horse looks left or right
+  if (direction == LEFT_DIR) {
     scale(-1.0, 1.0);
-    translate(-1200,0);
+    translate(INVERSION_OFFSET, 0);
   }
-
-    
-  translate(0, yOffset);
   
-  translate(xOffset * direction, 0);
-
+  // Translate the horse to the correct position, then draw
+  translate(xOffset * direction, yOffset);
   horse1.drawHorse();
-  
-  fill(122, 50);
-  rect(0, -200, 1080, 920);
-  rect(2100, -500, 300, 300);
-  
-  
-  detector.detectCollisions();
-  
-  //println("Y-Offset = " + yOffset);
-  //println("Velocity = " + velocity);
-  //println("Acceleration = " + acceleration);
-  //println("isJumping = " + isJumping);
-  //println("ACC = " + yAcceleration);
-  //println(maxHeightReached);
-  //println(yOffset);
-  //println("MIN = " + minHeightReached);
-  //println("X = " + xOffset + " | Y = " + yOffset);
-  if(mousePressed == true) {
-    println("X = " + mouseX + " | Y = " + mouseY);
+
+  // Ensure that the horse does not move off the edge of the screen
+  if (xOffset > width * 5 - 1200) {
+    acceleration = -30;
+  } else if (xOffset < 0) {
+    acceleration = +30;
   }
+
   
-  detector.detectCollisions();
 }
 
 void keyPressed() {
-  if(keyCode == RIGHT) {
+
+  if (keyCode == RIGHT) {
     direction = RIGHT_DIR;
     isMoving = true;
-  }
-  else if(keyCode == LEFT) {
+  } else if (keyCode == LEFT) {
     direction = LEFT_DIR;
     isMoving = true;
-  }
-  else if(keyCode == 32) {
+  } else if (keyCode == 32) {
     isJumping = true;
+  } else if (keyCode == UP) {
+    isKnightJumping = true;
+  } else if (keyCode == DOWN) {
+    rotationOffset += 5;
   }
 }
 
 void keyReleased() {
-  if(keyCode == RIGHT || keyCode == LEFT) {
+  if (keyCode == RIGHT && direction == RIGHT_DIR || keyCode == LEFT && direction == LEFT_DIR) {
     isMoving = false;
-  }
-  else if(keyCode == 32) {
+  } else if (keyCode == 32) {
     isJumping = false;
   }
-  
 }
 
-
-
-
-/*
-// Store global variables to control horse movement
-int count;
-int direction;
-float velocity;
-float acceleration;
-float initialVelocity;
-float xOffset;
-float reverseOffset;
-
-// Background containing various static items
-CustomBackground cBackground;
-
-final int TOP = 1, BOTTOM = -1;  // Indicate if horse is in top/bottom lane
-final int LEFT = -1, RIGHT = 1;  // Indicate if horse if moving left/right
-
-void setup() {
-  size(1080, 720);
-  count = 0;          // Representation of time
-  direction = RIGHT;  // Set the initial relative direction of the horses
-  velocity = 0;       // How fast the horse is moving at a given count
-  acceleration = 0;   // How fast the horse is increasing in velocity
-  initialVelocity = 0;
-  xOffset = 0;
-  reverseOffset = 0;
+void endGame() throws IOException {
+  File highScoreFile = new File("highScores.txt");
+  //FileWriter writer = new FileWriter(highScoreFile);
   
-  // Generate custom colors for horses/knights
-  color crimson = color(160, 16, 16);
-  color navy = color(14, 46, 201);
-  color brightRed = color(255, 0, 0);
-  color brightBlue = color(0, 0, 255);
-  color darkBrown = color(139, 69, 19);
-  color lightBrown = color(169, 99, 49);
-  color lightGrey = color(200);
-
-  // Create two horses: one in the top lane, one in the bottom lane
-  horse1 = new Horse(darkBrown, crimson, brightRed, TOP);
-  horse2 = new Horse(lightGrey, navy, brightBlue, BOTTOM);
+  BufferedReader reader = createReader("highScores.txt");
   
-  // Set initial background (before horses are added);
-  cBackground = new CustomBackground();
-  cBackground.drawBackground();
+  String highScoreList = reader.readLine();
+  Scanner scan = new Scanner(highScoreList);
+  scan.useDelimiter(";");
+  
+  ArrayList<String> scores = new ArrayList<String>();
+  ArrayList<String> names = new ArrayList<String>();
+  
+  while(scan.hasNext()) {
+    names.add(scan.next());
+    scores.add(scan.next());
+  }
+  int rank = 0;
+  for(int i = 0; i < scores.size(); i++) {
+    if(score > Integer.parseInt(scores.get(i))) {
+      rank = i+1;
+    }
+  }
+  System.out.println(scores);
+  System.out.println(names);
+  
+  scan.close();
+  //writer.close();
+  
+  noLoop();
 }
-
-void draw() {
-  
-  // Redraw custom background (everything except horses/knights)
-  cBackground.drawBackground();
-
-  // Control horse movement:
-  // Top horse moves left to right.  Speeds up until middle of screen,
-  // then slows down, eventually flipping horizontally and continuing
-  if (count == 0) {
-    velocity = 0;
-    initialVelocity = 0;
-    acceleration = 0;
-    direction = RIGHT;
-  } else if (count == 179) {
-    velocity = 0;
-    initialVelocity = 0;
-    acceleration = 0;
-    direction = LEFT;
-    reverseOffset = xOffset;
-  }
-
-   // Acceleration controlled at intervals across screen
-  if (count < 89) {
-    acceleration++;
-  } else if (count < 179) {
-    acceleration--;
-  } else if (count < 269) {
-    acceleration--;
-  } else if (count < 359) {
-    acceleration++;
-  }
-  
-  // Count incremented with each draw frame
-  count++;
-  
-  // Use basic acceleration/velocity formula, adjusted for desired look and feel
-  velocity = initialVelocity + acceleration * ((count % 182) / 180.0) * 1.15;
-  xOffset = initialVelocity * (count % 182 /10.0) + (0.5 * acceleration) * pow(count % 182 /10.0, 2);
-  initialVelocity = velocity; 
-
-  // Control movement of each horse individually, based on its current direction
-  if (direction == RIGHT) {
-
-    // Move top horse
-    pushMatrix();
-    translate(xOffset / 100.0, 350);
-    scale(0.22, 0.22);
-    horse1.drawHorse();
-    popMatrix();
-
-    // Move bottom horse
-    pushMatrix();
-    translate(-xOffset / 100.0 + 1050, 450);
-    scale(-0.22, 0.22);
-    horse2.drawHorse();
-    popMatrix();
-  } 
-  else if (direction == LEFT) {
-
-    // Move top horse
-    pushMatrix();
-    translate(xOffset / 100.0 + reverseOffset / 100.0 + 250, 350);
-    scale(-0.22, 0.22);
-    horse1.drawHorse();
-    popMatrix();
-    
-    // Move bottom horse
-    pushMatrix();
-    translate(-xOffset / 100.0, 450);
-    scale(0.22, 0.22);
-    horse2.drawHorse();
-    popMatrix();
-  }
-
-  // Keep count in range of 0 - 359
-  count = frameCount % 360;
-}
-*/
