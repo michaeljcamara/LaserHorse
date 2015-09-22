@@ -75,7 +75,6 @@ void setup() {
   // Generate custom colors for horse/knight
   color crimson = color(160, 16, 16);
   color brightRed = color(255, 0, 0);
-  ;
   color darkBrown = color(139, 69, 19);
 
   // Create one horse with red colors
