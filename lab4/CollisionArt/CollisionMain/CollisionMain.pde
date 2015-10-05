@@ -8,9 +8,11 @@ ArrayList<ArrayList<Ring>> ringList = new ArrayList<ArrayList<Ring>>();
 int numRings = 150;
 int sizeRings = 20;
 int numChains = 1;
+ArrayList<Tetrahedron> tetras = new ArrayList<Tetrahedron>();
+final int MOVE_SPEED = 5;
 
 void setup() {
-  size(800, 600, P3D);
+  size(800, 800, P3D);
   randomSeed(System.currentTimeMillis());
   noStroke();
 
@@ -20,12 +22,14 @@ void setup() {
   
   camX = 0;
   camY = 0;
-  camZ = 0;
+  camZ = 200;
   lookX = 0;
   lookY = 0;
   lookZ = -100000;
   angle = 0;
   angleV = 0;
+  
+  tetras.add(new Tetrahedron(0, 0, 0));
 
   //Ring firstRing = new Ring(0,0,-500, sizeRings, 0);  
   
@@ -36,27 +40,10 @@ void setup() {
     
     for(int i = 0; i < numRings; i++) {
       newChain.add(new Ring(newChain.get(i)));
-      //rings.add(new Ring(rings.get(i)));
-      //rings2.add(new Ring(rings2.get(i)));
-      //rings3 = new ArrayList<Ring>(rings3);
-      //rings4 = new ArrayList<Ring>(rings4);
     }
     
     ringList.add(newChain);
   }
-  
-  //for(int i = 0; i < numRings; i++) {
-  //  rings2.add(new Ring(rings2.get(i)));
-  //}
-  
-  //rings2 = new ArrayList<Ring>(rings2);
-  //rings3 = new ArrayList<Ring>(rings3);
-  //rings4 = new ArrayList<Ring>(rings4);
-  
-  //ringList.add(rings);
-  //ringList.add(rings2);
-  //ringList.add(rings3);
-  //ringList.add(rings4);
 }
 
 void draw() {
@@ -65,64 +52,53 @@ void draw() {
   background(0);
   fill(255);
 
-  for (int i = 0; i < 10; i++) {
-    shapes.get(i).drawShape();
+//  for (int i = 0; i < 10; i++) {
+//    shapes.get(i).drawShape();
+//  }
+  
+  for (int i = 0; i < tetras.size(); i++) {
+    tetras.get(i).drawShape();
   }
-  
-  //rings.get(0).adjustX(frameCount/100.0);
-  
-  //for(int i = 0; i < rings.size(); i++) {
-  //  Ring currentRing = rings.get(i);
-    
-  //  if(i != 0)
-  //    currentRing.updatePosition();
-  //  currentRing.drawRing(); 
-  //}
 
-  for(int i = 0; i < ringList.size(); i++) {
-    ArrayList<Ring> currentRings = ringList.get(i);
-    for(int j = 0; j < currentRings.size(); j++) {
-      
-      Ring currentRing = currentRings.get(j);
-    
-      if(j != 0)
-        currentRing.updatePosition();
-      //else
-      //  currentRing.adjustX(random(-5,5));
-      currentRing.drawRing();
-    }
-  }
+//  for(int i = 0; i < ringList.size(); i++) {
+//    ArrayList<Ring> currentRings = ringList.get(i);
+//    for(int j = 0; j < currentRings.size(); j++) {
+//      
+//      Ring currentRing = currentRings.get(j);
+//    
+//      if(j != 0)
+//        currentRing.updatePosition();
+//      //else
+//      //  currentRing.adjustX(random(-5,5));
+//      currentRing.drawRing();
+//    }
+//  }
   
-  
-
   keyboardInput();
   mousePosition();
-  //  camera(0, 0, 1000, 0, 0, -1, 0, 1, 0);
   camera(camX, camY, camZ, lookX , lookY, lookZ, 0, 1, 0);
-  
-  
 }
 
 void keyboardInput() {
   if (keyPressed && (key == CODED)) {
     switch(keyCode) {
     case LEFT:
-      camX += -20 * cos(radians(angle));;
-      camZ += -20 * sin(radians(angle));;
+      camX += -MOVE_SPEED * cos(radians(angle));;
+      camZ += -MOVE_SPEED * sin(radians(angle));;
       break;
     case RIGHT:
-      camX += 20 * cos(radians(angle));;
-      camZ += 20 * sin(radians(angle));; 
+      camX += MOVE_SPEED * cos(radians(angle));;
+      camZ += MOVE_SPEED * sin(radians(angle));; 
       break;
     case UP:
       
-      camX += 20 * sin(radians(angle));;
-      camZ += -20 * cos(radians(angle));;
+      camX += MOVE_SPEED * sin(radians(angle));;
+      camZ += -MOVE_SPEED * cos(radians(angle));;
       break;
     case DOWN:
       
-      camX += -20 * sin(radians(angle));
-      camZ += 20 * cos(radians(angle));;
+      camX += -MOVE_SPEED * sin(radians(angle));
+      camZ += MOVE_SPEED * cos(radians(angle));;
       break;
     default:
       break;
@@ -131,65 +107,34 @@ void keyboardInput() {
     else if(keyPressed){
     switch(key) {
     case 'a':
-      camX += -20 * cos(radians(angle));;
-      camZ += -20 * sin(radians(angle));;
+      camX += -MOVE_SPEED * cos(radians(angle));;
+      camZ += -MOVE_SPEED * sin(radians(angle));;
       break;
     case 'd':
-      camX += 20 * cos(radians(angle));;
-      camZ += 20 * sin(radians(angle));; 
+      camX += MOVE_SPEED * cos(radians(angle));;
+      camZ += MOVE_SPEED * sin(radians(angle));; 
       break;
     case 'w':
       
-      camX += 20 * sin(radians(angle));;
-      camZ += -20 * cos(radians(angle));;
+      camX += MOVE_SPEED * sin(radians(angle));;
+      camZ += -MOVE_SPEED * cos(radians(angle));;
       break;
     case 's':
       
-      camX += -20 * sin(radians(angle));
-      camZ += 20 * cos(radians(angle));;
+      camX += -MOVE_SPEED * sin(radians(angle));
+      camZ += MOVE_SPEED * cos(radians(angle));;
       break;
     case 'r':
-      camY += -20;
+      camY += -MOVE_SPEED;
       break;
     case 'f':
-      camY += 20;
+      camY += MOVE_SPEED;
       break;
     default:
       break;
     }
   } 
 }
-
-//void keyPressed() {
-//    switch(key) {
-//    case 'a':
-//      camX += -20 * cos(radians(angle));;
-//      camZ += -20 * sin(radians(angle));;
-//      break;
-//    case 'd':
-//      camX += 20 * cos(radians(angle));;
-//      camZ += 20 * sin(radians(angle));; 
-//      break;
-//    case 'w':
-      
-//      camX += 20 * sin(radians(angle));;
-//      camZ += -20 * cos(radians(angle));;
-//      break;
-//    case 's':
-      
-//      camX += -20 * sin(radians(angle));
-//      camZ += 20 * cos(radians(angle));;
-//      break;
-//    case 'r':
-//      camY += -20;
-//      break;
-//    case 'f':
-//      camY += 20;
-//      break;
-//    default:
-//      break;
-//  } 
-//}
 
 void mousePosition() {
   float mouse = mouseX;

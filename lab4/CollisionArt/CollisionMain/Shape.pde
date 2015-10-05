@@ -22,8 +22,43 @@ class Shape {
     pushMatrix();
     translate(x, y, z);
     fill(r, g, b);
-    box(h, w, d);
+    stroke(0);
+//    box(h, w, d);
+
+    float len = 1000;
+    int vertices = 3;
+
+    beginShape();
+      vertex(0, 0, 0);
+      vertex(len, 0, 0);
+      vertex(len/2, len * sqrt(3) / 2, 0);
+    endShape(CLOSE);
     
+    beginShape();
+      vertex(0, 0, 0);
+      vertex(len, 0, 0);
+      vertex(len/2, len * sqrt(3) / 4, len * sqrt(3) / 2);
+    endShape(CLOSE);
+    
+    beginShape();
+      vertex(len, 0, 0);
+      vertex(len/2, len * sqrt(3) / 2, 0);
+      vertex(len/2, len * sqrt(3) / 4, len * sqrt(3) / 2);
+    endShape(CLOSE);
+    
+    beginShape();
+      vertex(len/2, len * sqrt(3) / 2, 0);
+      vertex(len/2, len * sqrt(3) / 4, len * sqrt(3) / 2);
+      vertex(0, 0, 0);
+    endShape(CLOSE);
+    
+    /*
+    beginShape();
+      vertex();
+      vertex();
+      vertex();
+    endShape(CLOSE);
+    */
     
     popMatrix();
   }
