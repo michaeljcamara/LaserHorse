@@ -3,7 +3,7 @@ float angle, angleV;
 float lookX, lookY, lookZ;
 ArrayList<Tetrahedron> tetras = new ArrayList<Tetrahedron>();
 final int MOVE_SPEED = 5;
-final int NUM_TETRAS = 2;
+final int NUM_TETRAS = 1;
 
 void setup() {
   size(800, 800, P3D);
@@ -12,7 +12,7 @@ void setup() {
   
   camX = 0;
   camY = 0;
-  camZ = 2000;
+  camZ = 200;
   lookX = 0;
   lookY = 0;
   lookZ = -100000;
@@ -21,8 +21,8 @@ void setup() {
   
   //tetras.add(new Tetrahedron(100, 100, 100));
   for(int i = 0; i < NUM_TETRAS; i++) {
-    //tetras.add(new Tetrahedron(random(-500, 500), random(-500, 500), random(-500, 500)));
-    tetras.add(new Tetrahedron(0,0,0));
+    //tetras.add(new Tetrahedron(random(-1000, 1000), random(-1000, 1000), random(-1000, 1000)));
+    tetras.add(new Tetrahedron(100,50,100));
   }
 }
 
@@ -45,20 +45,9 @@ void draw() {
     //rotateX(frameCount/10000.0);
     //rotateY(frameCount/10000.0);
     //rotateZ(frameCount/15000.0);
-    pushMatrix();
-    //translate(frameCount*3,0,0);
-    //rotateY(frameCount/50.0);
-    //rotateX(frameCount/50.0);
     tetras.get(i).drawShape();
-    popMatrix();
     //popMatrix();
   }
-  
-  fill(255,0,0, 100);
-  stroke(255,0,0);
-  strokeWeight(10);
-  noFill();
-  box(1000);
   
   keyboardInput();
   mousePosition();

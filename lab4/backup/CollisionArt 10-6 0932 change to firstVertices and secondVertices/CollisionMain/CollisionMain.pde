@@ -3,7 +3,7 @@ float angle, angleV;
 float lookX, lookY, lookZ;
 ArrayList<Tetrahedron> tetras = new ArrayList<Tetrahedron>();
 final int MOVE_SPEED = 5;
-final int NUM_TETRAS = 2;
+final int NUM_TETRAS = 1;
 
 void setup() {
   size(800, 800, P3D);
@@ -21,7 +21,7 @@ void setup() {
   
   //tetras.add(new Tetrahedron(100, 100, 100));
   for(int i = 0; i < NUM_TETRAS; i++) {
-    //tetras.add(new Tetrahedron(random(-500, 500), random(-500, 500), random(-500, 500)));
+    //tetras.add(new Tetrahedron(random(-1000, 1000), random(-1000, 1000), random(-1000, 1000)));
     tetras.add(new Tetrahedron(0,0,0));
   }
 }

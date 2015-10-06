@@ -39,13 +39,6 @@ class Matrix {
   void setValue(int row, int column, float value) {
     matrixArray[row][column] = value;
   }
-  
-  void setVertex(int row, Vertex v) {
-    matrixArray[row][0] = v.getX();
-    matrixArray[row][1] = v.getY();
-    matrixArray[row][2] = v.getZ();
-    matrixArray[row][3] = 1;
-  }
 
   // Retrieve the value of a particular element in the matrix, given the row and column
   float getValue(int row, int column) {
@@ -188,13 +181,6 @@ class Matrix {
 
     return rowVector;
   }
-  
-  // Retrieve the row at the given index, represented as a Vertex object
-  Vertex getVertex(int row) {
-    Vertex v = new Vertex(matrixArray[row][0], matrixArray[row][1], matrixArray[row][2]);  
-
-    return v;
-  }
 
   // Retrieve the column at the given index, represented as a Matrix object
   Matrix getColumnVector(int column) {
@@ -244,3 +230,5 @@ class Matrix {
     return output;
   }
 }
+
+

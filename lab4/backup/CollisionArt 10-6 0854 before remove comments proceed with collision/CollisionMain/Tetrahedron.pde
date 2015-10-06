@@ -1,6 +1,5 @@
 class Tetrahedron {
   float x, y, z; // center of shape
-  float vx, vy, vz;
   
   float transX, transY, transZ;
   float randRotX, randRotY, randRotZ;
@@ -9,51 +8,78 @@ class Tetrahedron {
     this.x = x;
     this.y = y;
     this.z = z;
-
-    vx = random(5, 10);
-    vy = random(5, 10);
-    vz = random(5, 10);
+    
+    transX = random(-1000, 1000);
+    transY = random(-1000, 1000);
+    transZ = random(-1000, 1000);
+    
+    randRotX = random(-PI, PI);
+    randRotY = random(-PI, PI);
+    randRotZ = random(-PI, PI);
   }
 
   void drawShape() {
     pushMatrix();
     pushStyle();
     
+    //translate(transX, transY, transZ);
+    //rotateX(randRotX);
+    //rotateY(randRotY);
+    //rotateZ(randRotZ);
     
-    //float xyAngle = radians(180);
-    float xyAngle = radians(frameCount);
+    float xyAngle = radians(180);
     float xzAngle = radians(180);
-    
     float yzAngle = radians(180);
-    //float yzAngle = radians(180 + frameCount);
     
+    //fill(122, 100);
+    //fill(122, 255);
     fill(255, 100);
     
-    float len = 250;
+    float len = 100;
     stroke(0);
     strokeWeight(3);
     
-    ArrayList<Vertex> firstVertices = new ArrayList<Vertex>();
-    ArrayList<Vertex> secondVertices = new ArrayList<Vertex>();
-    {      
+    ArrayList<Vertex> vertices = new ArrayList<Vertex>();
+    {
+      //original
+      //Vertex v1 = new Vertex(x - len/2, y - len/3, z + len/3);
+      //Vertex v2 = new Vertex(x + len/2, y - len/3, z + len/3);
+      //Vertex v3 = new Vertex(x, y + len*(2/3.0), z + len/3);
+      //Vertex v4 = new Vertex(x, y, z - len*(2/3.0));
+      
       Vertex v1 = new Vertex(x - len/2.0, y - (len*sqrt(3.0)/2.0)/3.0, z + (len*sqrt(2.0/3.0))/3.0);
       Vertex v2 = new Vertex(x + len/2.0, y - (len*sqrt(3.0)/2.0)/3.0, z + (len*sqrt(2.0/3.0))/3.0);
       Vertex v3 = new Vertex(x, y + (len*sqrt(3.0)/2.0)*(2.0/3.0), z + (len*sqrt(2.0/3.0))/3.0);
       Vertex v4 = new Vertex(x, y, z - (len*sqrt(2.0/3.0)) * (2.0/3.0));
       
-      firstVertices.add(v1);
-      firstVertices.add(v2);
-      firstVertices.add(v3);
-      firstVertices.add(v4);
+      //(len*sqrt(2.0/3.0))
+      vertices.add(v1);
+      vertices.add(v2);
+      vertices.add(v3);
+      vertices.add(v4);
+    }
+
+    Matrix m = new Matrix(4, 4);
+    
+    for(int i = 0; i < vertices.size(); i++) {
+      m.setVertex(i, vertices.get(i)); 
+    }
+    
+    
+
+    for(int i = 0; i < vertices.size(); i++) {
+      Vertex v1 = vertices.get(i % 4);
+      Vertex v2 = vertices.get((i+1) % 4);
+      Vertex v3 = vertices.get((i+2) % 4);
+      
+      beginShape();
+        vertex(v1.getX(), v1.getY(), v1.getZ());
+        vertex(v2.getX(), v2.getY(), v2.getZ());
+        vertex(v3.getX(), v3.getY(), v3.getZ());
+      endShape(CLOSE);
     }
     
 
-    
-    Matrix m = new Matrix(4, 4);
-    
-    for(int i = 0; i < firstVertices.size(); i++) {
-      m.setVertex(i, firstVertices.get(i)); 
-    }
     
     Matrix xyRotation = new Matrix(4, 4);
     
@@ -120,6 +146,26 @@ class Tetrahedron {
       originTranslate.setValue(3, 1, -y);
       originTranslate.setValue(3, 2, -z);
       originTranslate.setValue(3, 3, 0);
+    
+      //originTranslate.setValue(0, 0, 1);
+      //originTranslate.setValue(0, 1, 0);
+      //originTranslate.setValue(0, 2, 0);
+      //originTranslate.setValue(0, 3, -x);
+      
+      //originTranslate.setValue(1, 0, 0);
+      //originTranslate.setValue(1, 1, 1);
+      //originTranslate.setValue(1, 2, 0);
+      //originTranslate.setValue(1, 3, -y);
+      
+      //originTranslate.setValue(2, 0, 0);
+      //originTranslate.setValue(2, 1, 0);
+      //originTranslate.setValue(2, 2, 1);
+      //originTranslate.setValue(2, 3, -z);
+      
+      //originTranslate.setValue(3, 0, 0);
+      //originTranslate.setValue(3, 1, 0);
+      //originTranslate.setValue(3, 2, 0);
+      //originTranslate.setValue(3, 3, 1);
       
     Matrix destinationTranslate = new Matrix(4,4);
     
@@ -143,98 +189,47 @@ class Tetrahedron {
       destinationTranslate.setValue(3, 2, z);
       destinationTranslate.setValue(3, 3, 0);
     
-    // Create dual tetra
-    //Matrix updatedMatrix = m.addMatrices(m, originTranslate);
-    //updatedMatrix = m.multiplyMatrices(updatedMatrix, yzRotation);
-    //updatedMatrix = m.addMatrices(updatedMatrix, destinationTranslate);
+    //Matrix updatedMatrix = m.multiplyMatrices(m, yzRotation);
     
-    // Rotate both tetras in unison
-    Matrix updatedMatrix = m.addMatrices(m, originTranslate);
-    Matrix updatedMatrix2 = m.addMatrices(m, originTranslate); // this is the origiinal tetra
-    //Rotate second one so that dual tetra
-    updatedMatrix = m.multiplyMatrices(updatedMatrix, yzRotation);
-    //Rotate both xy
-    updatedMatrix2 = m.multiplyMatrices(updatedMatrix2, xyRotation);
-    updatedMatrix = m.multiplyMatrices(updatedMatrix, xyRotation);
-    //put both back at destination
-    updatedMatrix = m.addMatrices(updatedMatrix, destinationTranslate);
-    updatedMatrix2 = m.addMatrices(updatedMatrix2, destinationTranslate);
-    
-    
-    for(int i = 0; i < firstVertices.size(); i++) {
-     //Vertex updatedVertex = updatedMatrix.getVertex(i);
-     //Vertex currentVertex = firstVertices.get(i);
-     //currentVertex.setVertex(updatedVertex);
-     
-     Vertex updatedVertex = updatedMatrix.getVertex(i);
-     secondVertices.add(updatedVertex);
-     
-     // (for the original tetra, just rotated xy)
-     Vertex updatedVertex2 = updatedMatrix2.getVertex(i);
-     Vertex currentVertex2 = firstVertices.get(i);
-     currentVertex2.setVertex(updatedVertex2);
-     
-    }
-    
-    boolean xBounce = false;
-    boolean yBounce = false;
-    boolean zBounce = false;
-    
-        for(int i = 0; i < firstVertices.size(); i++) {
-     Vertex v = firstVertices.get(i);
-     Vertex v2 = firstVertices.get(i);
-     
-     if(xBounce == false && abs(v.getX()) > 500 || v2.getX() > 500) {
-       vx *= -1;
-       xBounce = true;
-     }
-     if(yBounce == false && abs(v.getY()) > 500 || v2.getY() > 500) {
-       vy *= -1;
-       yBounce = true;
-     }
-     if(zBounce == false && abs(v.getZ()) > 500 || v2.getZ() > 500) {
-       vz *= -1;
-       zBounce = true;
-     }
-    }
-    
-    x += vx;
-    y += vy;
-    z += vz;
-    
-    //Correct this with vx sign
-    if(xBounce == true) {
-      x += 10 ;
-    }
-      if(yBounce == true) {
-      y += 10;
-      }
-      if(zBounce == true) {
-      z += 10;
-      }
-    
-    for(int i = 0; i < firstVertices.size(); i++) {
-      Vertex v1 = firstVertices.get(i % 4);
-      Vertex v2 = firstVertices.get((i+1) % 4);
-      Vertex v3 = firstVertices.get((i+2) % 4);
+   //println("Original\n" + m);
       
-      beginShape();
-        vertex(v1.getX(), v1.getY(), v1.getZ());
-        vertex(v2.getX(), v2.getY(), v2.getZ());
-        vertex(v3.getX(), v3.getY(), v3.getZ());
-      endShape(CLOSE);
+    //Matrix updatedMatrix = m.multiplyMatrices(m, originTranslate);
+    
+    //println("Updated\n" + updatedMatrix);
+    
+    //Matrix updatedMatrix = m.multiplyMatrices(m, originTranslate);
+    //Matrix updatedMatrix2 = updatedMatrix.multiplyMatrices(updatedMatrix, yzRotation);
+    //Matrix updatedMatrix3 = updatedMatrix2.multiplyMatrices(updatedMatrix2, destinationTranslate);
+    
+    //Matrix updatedMatrix = m.multiplyMatrices(originTranslate, m);
+    //Matrix updatedMatrix2 = updatedMatrix.multiplyMatrices(yzRotation, updatedMatrix);
+    //Matrix updatedMatrix3 = updatedMatrix2.multiplyMatrices(destinationTranslate, updatedMatrix2);
+    
+    // Most recent one
+    Matrix updatedMatrix = m.addMatrices(m, originTranslate);
+    updatedMatrix = m.multiplyMatrices(updatedMatrix, yzRotation);
+    updatedMatrix = m.addMatrices(updatedMatrix, destinationTranslate);
+    
+    println(updatedMatrix);
+    
+    for(int i = 0; i < vertices.size(); i++) {
+     Vertex updatedVertex = updatedMatrix.getVertex(i);
+     Vertex currentVertex = vertices.get(i);
+     currentVertex.setVertex(updatedVertex);
     }
     
+    //translate(x,y,z);
+    //rotateX(radians(180));
+    //translate(-x,-y,-z);
+    //translate(0, 0, len * 0.17);
     
-    // Unfortunately I need a small offset to align the tetrahedra together perfectly.
-    // This may be from some slightly misaligned verices during creation (bad math somewhere).
-    // I'll need to troubleshoot this further such that I can remove this later.
-    translate(0, 0, len * 0.135);
+    translate(0, 0, 15);
+    //translate(0, 0, -15);
     
-    for(int i = 0; i < secondVertices.size(); i++) {
-      Vertex v1 = secondVertices.get(i % 4);
-      Vertex v2 = secondVertices.get((i+1) % 4);
-      Vertex v3 = secondVertices.get((i+2) % 4);
+    for(int i = 0; i < vertices.size(); i++) {
+      Vertex v1 = vertices.get(i % 4);
+      Vertex v2 = vertices.get((i+1) % 4);
+      Vertex v3 = vertices.get((i+2) % 4);
       
       beginShape();
         vertex(v1.getX(), v1.getY(), v1.getZ());
@@ -251,7 +246,7 @@ class Tetrahedron {
     pushStyle();
     stroke(255,0,0);
     strokeWeight(10);
-    line(x,y,z, len*sqrt(3/8.0), len*sqrt(3/8.0), len*sqrt(3/8.0));
+    line(x,y,z, x+len/sqrt(3), y+len/sqrt(3), z+len/sqrt(3));
     translate(x,y,z);
     fill(255,0,0,50);
     //sphere(len/sqrt(3));

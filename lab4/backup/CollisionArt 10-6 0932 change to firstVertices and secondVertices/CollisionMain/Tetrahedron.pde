@@ -10,9 +10,9 @@ class Tetrahedron {
     this.y = y;
     this.z = z;
 
-    vx = random(5, 10);
-    vy = random(5, 10);
-    vz = random(5, 10);
+    vx = 10;
+    vy = 10;
+    vz = 10;
   }
 
   void drawShape() {
@@ -20,12 +20,9 @@ class Tetrahedron {
     pushStyle();
     
     
-    //float xyAngle = radians(180);
-    float xyAngle = radians(frameCount);
+    float xyAngle = radians(180);
     float xzAngle = radians(180);
-    
     float yzAngle = radians(180);
-    //float yzAngle = radians(180 + frameCount);
     
     fill(255, 100);
     
@@ -33,26 +30,53 @@ class Tetrahedron {
     stroke(0);
     strokeWeight(3);
     
-    ArrayList<Vertex> firstVertices = new ArrayList<Vertex>();
-    ArrayList<Vertex> secondVertices = new ArrayList<Vertex>();
+    ArrayList<Vertex> vertices = new ArrayList<Vertex>();
     {      
       Vertex v1 = new Vertex(x - len/2.0, y - (len*sqrt(3.0)/2.0)/3.0, z + (len*sqrt(2.0/3.0))/3.0);
       Vertex v2 = new Vertex(x + len/2.0, y - (len*sqrt(3.0)/2.0)/3.0, z + (len*sqrt(2.0/3.0))/3.0);
       Vertex v3 = new Vertex(x, y + (len*sqrt(3.0)/2.0)*(2.0/3.0), z + (len*sqrt(2.0/3.0))/3.0);
       Vertex v4 = new Vertex(x, y, z - (len*sqrt(2.0/3.0)) * (2.0/3.0));
       
-      firstVertices.add(v1);
-      firstVertices.add(v2);
-      firstVertices.add(v3);
-      firstVertices.add(v4);
+      vertices.add(v1);
+      vertices.add(v2);
+      vertices.add(v3);
+      vertices.add(v4);
     }
     
-
+    for(int i = 0; i < vertices.size(); i++) {
+     Vertex v = vertices.get(i);
+     
+     if(abs(v.getX()) > 500) {
+       vx *= -1;
+     }
+     if(abs(v.getY()) > 500) {
+       vy *= -1;
+     }
+     if(abs(v.getZ()) > 500) {
+       vz *= -1;
+     }
+    }
+    
+    x += vx;
+    y += vy;
+    z += vz;
+    
+    for(int i = 0; i < vertices.size(); i++) {
+      Vertex v1 = vertices.get(i % 4);
+      Vertex v2 = vertices.get((i+1) % 4);
+      Vertex v3 = vertices.get((i+2) % 4);
+      
+      beginShape();
+        vertex(v1.getX(), v1.getY(), v1.getZ());
+        vertex(v2.getX(), v2.getY(), v2.getZ());
+        vertex(v3.getX(), v3.getY(), v3.getZ());
+      endShape(CLOSE);
+    }
     
     Matrix m = new Matrix(4, 4);
     
-    for(int i = 0; i < firstVertices.size(); i++) {
-      m.setVertex(i, firstVertices.get(i)); 
+    for(int i = 0; i < vertices.size(); i++) {
+      m.setVertex(i, vertices.get(i)); 
     }
     
     Matrix xyRotation = new Matrix(4, 4);
@@ -143,98 +167,27 @@ class Tetrahedron {
       destinationTranslate.setValue(3, 2, z);
       destinationTranslate.setValue(3, 3, 0);
     
-    // Create dual tetra
-    //Matrix updatedMatrix = m.addMatrices(m, originTranslate);
-    //updatedMatrix = m.multiplyMatrices(updatedMatrix, yzRotation);
-    //updatedMatrix = m.addMatrices(updatedMatrix, destinationTranslate);
-    
-    // Rotate both tetras in unison
     Matrix updatedMatrix = m.addMatrices(m, originTranslate);
-    Matrix updatedMatrix2 = m.addMatrices(m, originTranslate); // this is the origiinal tetra
-    //Rotate second one so that dual tetra
     updatedMatrix = m.multiplyMatrices(updatedMatrix, yzRotation);
-    //Rotate both xy
-    updatedMatrix2 = m.multiplyMatrices(updatedMatrix2, xyRotation);
-    updatedMatrix = m.multiplyMatrices(updatedMatrix, xyRotation);
-    //put both back at destination
     updatedMatrix = m.addMatrices(updatedMatrix, destinationTranslate);
-    updatedMatrix2 = m.addMatrices(updatedMatrix2, destinationTranslate);
     
+    println(updatedMatrix);
     
-    for(int i = 0; i < firstVertices.size(); i++) {
-     //Vertex updatedVertex = updatedMatrix.getVertex(i);
-     //Vertex currentVertex = firstVertices.get(i);
-     //currentVertex.setVertex(updatedVertex);
-     
+    for(int i = 0; i < vertices.size(); i++) {
      Vertex updatedVertex = updatedMatrix.getVertex(i);
-     secondVertices.add(updatedVertex);
-     
-     // (for the original tetra, just rotated xy)
-     Vertex updatedVertex2 = updatedMatrix2.getVertex(i);
-     Vertex currentVertex2 = firstVertices.get(i);
-     currentVertex2.setVertex(updatedVertex2);
-     
+     Vertex currentVertex = vertices.get(i);
+     currentVertex.setVertex(updatedVertex);
     }
-    
-    boolean xBounce = false;
-    boolean yBounce = false;
-    boolean zBounce = false;
-    
-        for(int i = 0; i < firstVertices.size(); i++) {
-     Vertex v = firstVertices.get(i);
-     Vertex v2 = firstVertices.get(i);
-     
-     if(xBounce == false && abs(v.getX()) > 500 || v2.getX() > 500) {
-       vx *= -1;
-       xBounce = true;
-     }
-     if(yBounce == false && abs(v.getY()) > 500 || v2.getY() > 500) {
-       vy *= -1;
-       yBounce = true;
-     }
-     if(zBounce == false && abs(v.getZ()) > 500 || v2.getZ() > 500) {
-       vz *= -1;
-       zBounce = true;
-     }
-    }
-    
-    x += vx;
-    y += vy;
-    z += vz;
-    
-    //Correct this with vx sign
-    if(xBounce == true) {
-      x += 10 ;
-    }
-      if(yBounce == true) {
-      y += 10;
-      }
-      if(zBounce == true) {
-      z += 10;
-      }
-    
-    for(int i = 0; i < firstVertices.size(); i++) {
-      Vertex v1 = firstVertices.get(i % 4);
-      Vertex v2 = firstVertices.get((i+1) % 4);
-      Vertex v3 = firstVertices.get((i+2) % 4);
-      
-      beginShape();
-        vertex(v1.getX(), v1.getY(), v1.getZ());
-        vertex(v2.getX(), v2.getY(), v2.getZ());
-        vertex(v3.getX(), v3.getY(), v3.getZ());
-      endShape(CLOSE);
-    }
-    
     
     // Unfortunately I need a small offset to align the tetrahedra together perfectly.
     // This may be from some slightly misaligned verices during creation (bad math somewhere).
     // I'll need to troubleshoot this further such that I can remove this later.
     translate(0, 0, len * 0.135);
     
-    for(int i = 0; i < secondVertices.size(); i++) {
-      Vertex v1 = secondVertices.get(i % 4);
-      Vertex v2 = secondVertices.get((i+1) % 4);
-      Vertex v3 = secondVertices.get((i+2) % 4);
+    for(int i = 0; i < vertices.size(); i++) {
+      Vertex v1 = vertices.get(i % 4);
+      Vertex v2 = vertices.get((i+1) % 4);
+      Vertex v3 = vertices.get((i+2) % 4);
       
       beginShape();
         vertex(v1.getX(), v1.getY(), v1.getZ());
