@@ -57,9 +57,7 @@ class DualTetrahedron {
 
     // Randomly adjust the base rotational velocity
     xySpeed = random(-1, 1);
-
-    // Control the absolute amount of the rotation in the XY plane
-    xyAngle = radians((frameCount + xyOffset) * xySpeed);   
+   
     //float yzAngle = radians(180);  // not yet implemented
 
       // Set length of each side of the shape
@@ -69,6 +67,9 @@ class DualTetrahedron {
   void drawShape() {
     pushMatrix();
     pushStyle();
+
+    // Control the absolute amount of the rotation in the XY plane
+    xyAngle = radians((frameCount + xyOffset) * xySpeed);
 
     createFirstVertices();      // Create initial vertices for first tetrahedron
     createMatrices();           // Create all matrices
@@ -287,4 +288,3 @@ class DualTetrahedron {
     }
   }
 }
-
