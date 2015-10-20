@@ -3,72 +3,118 @@ Bryn Mawr College, Department of Computer Science <br>
 Click mouse to cycle through a series of convolution filters <br>
 */
 
-float[][][] filters = { //average
-                        {{1/9., 1/9., 1/9.},
-                        {1/9., 1/9., 1/9.},
-                        {1/9., 1/9., 1/9.}},
-                        //Sharpen
-                        {{-1, -1, -1},
-                        {-1,  9, -1},
-                        {-1, -1, -1}},
-                        //Gaussian Blur
-                        {{1/16., 2/16., 1/16.}, 
-                        {2/16., 4/16., 2/16.}, 
-                        {1/16., 2/16., 1/16.}},
-                        //Sharpen2
-                        {{0, -2/3., 0},
-                        {-2/3., 11/3., -2/3.},
-                        {0, -2/3., 0}},
+int index;
+PImage[] images;
+
+float[][][] filters = { 
+                       
+                        
                         //Laplacian Edge Detection horizontal/vertical
                         {{0,  -1,  0},
                         {-1, 4,  -1},
                         {0,  -1,  0}},
-                        //Edge detection with diagonals
-                        {{-1, -1, -1}, 
-                        {-1, 8, -1}, 
+
+                        // Sharpen
+                        {{-1, -1, -1},
+                        {-1,  9, -1},
                         {-1, -1, -1}},
-                        //Emboss, need to add offset 127 as weights add up to 0
-                        {{1, 1, 0}, 
-                        {1, 0, -1}, 
-                        {0, -1, -1}}};
-String[] filterNames = {"Average", "Sharpen", "Gaussian Blur", "Sharpen 2", "Laplacian Edge Detection Horizontal/Vertical",
-                        "Edge Detection with Diagonals", "Emboss"};
-int counter = 0;
-PImage img, img2;
+                        
+                        // Newly created filter
+                        {{0,-1,-2,-3,-4,-5,-4,-3,-2,-1,0},
+                          {-1,-1,-2,-3,-4,-5,-4,-3,-2,-1,-1},
+                          {-2,-2,-2,-3,-4,-5,-4,-3,-2,-2,-2},
+                          {-3,-3,-3,-3,-4,-5,-4,-3,-3,-3,-3},
+                          {-4,-4,-4,-4,-4,-5,-4,-4,-4,-4,-4},
+                          {-5,-5,-5,-5,-5,380,-5,-5,-5,-5,-5},
+                          {-4,-4,-4,-4,-4,-5,-4,-4,-4,-4,-4},
+                          {-3,-3,-3,-3,-4,-5,-4,-3,-3,-3,-3},
+                          {-2,-2,-2,-3,-4,-5,-4,-3,-2,-2,-2},
+                          {-1,-1,-2,-3,-4,-5,-4,-3,-2,-1,-1},
+                          {0,-1,-2,-3,-4,-5,-4,-3,-2,-1,0}}
+                        
+                        };
+
+PImage img;
 
 void setup() {
-  //original image
-  //img = loadImage("lunar.jpg");
-  img = loadImage("dog_blur1.jpg");
-  // new image to store the changed pixels
-  img2 = createImage(img.width, img.height, RGB);
-  size(img.width, 2*img.height);
+
+  size(1350, 898);
   
-  img.loadPixels();
-  img2.loadPixels();
-  //image(img, 0, 0);
-  image(img, 0, -1000);
-  applyFilter();
+  img = loadImage("owl.png");
+
+  PImage bigImage = createImage(img.width * 3, img.height * 2, RGB);
+  
+  image(bigImage,0,0);
+  
+  applyColorManipulation(bigImage);
+  
 }
 
-void draw(){
-}
-
-void mousePressed() {
-  applyFilter();
-}
-
-void applyFilter() {
-  for (int y=0; y<img.height; y++ ) {
-    for (int x=0; x<img.width; x++) {
-      img2.pixels[y*img.width+x] = convolution(x, y, filters[counter%filters.length], img);
+void applyColorManipulation(PImage currentImg) {
+  
+  currentImg.loadPixels();
+  
+  for(int y = 0; y < currentImg.height; y++) {
+    for(int x = 0; x < currentImg.width; x++) {
+      
+      int i = y*currentImg.width+x;
+      int iOriginal = (y % img.height) * img.width + (x % img.width);
+      
+       color c = img.pixels[iOriginal];
+       float colorRed = red(c);
+       float colorGreen = green(c);
+       float colorBlue = blue(c);
+       
+      if(x < img.width) {
+        if(y < img.height) {
+          currentImg.pixels[i] = img.pixels[iOriginal];
+        }
+        else {
+          currentImg.pixels[i] = convolution((x % img.width), (y % img.height), filters[0], img);
+        }
+      }
+      
+      
+      else if(x >= img.width && x < img.width * 2) {
+        if(y < img.height) {
+          currentImg.pixels[i] = color(200-colorRed, 125-colorGreen, colorBlue / 1.5);
+        }
+        else {
+          currentImg.pixels[i] = convolution((x % img.width), (y % img.height), filters[1], img);
+        }
+      }
+      
+      else if(x >= img.width * 2) {
+        if(y < img.height) {
+          if(colorRed > 122)
+            colorRed = 255;
+          else
+            colorRed = 0;
+          if(colorGreen > 122)
+            colorGreen = 255;
+          else
+          colorGreen = 0;
+          if(colorBlue > 122)
+             colorBlue = 255;
+             else
+             colorBlue = 0;
+          //currentImg.pixels[i] = color(colorRed * 1.25, colorGreen * 2.5, 0);
+          currentImg.pixels[i] = color(colorRed, colorGreen, colorBlue);
+        }
+        else {
+          currentImg.pixels[i] = convolution((x % img.width), (y % img.height), filters[2], img);
+        }
+      }
+      
+      
+      
     }
   }
-  img2.updatePixels();
-  image(img2, 0, height/2);
-  textSize(20);
-  text(filterNames[counter%filterNames.length], width/4, height/2+height/25);
-  counter++;
+
+  currentImg.updatePixels();
+  
+  image(currentImg,0,0); 
+    
 }
 
 // calculates the color after applying the filter
@@ -90,11 +136,5 @@ color convolution(int x, int y, float[][] matrix, PImage img) {
       b += (blue(img.pixels[idx]) * matrix[i][j]);
     }
   }
-  if (counter%filters.length == filters.length-1) { // last filter is the emboss filter, add offset
-    return color(r+127, g+127, b+127);
-  }
-  else {
-    return color(r, g, b);
-  }
+    return color(r, g, b); 
 }
-
