@@ -27,12 +27,12 @@ void setup() {
     
     // Desaturate red color
     if(imgHue < 30 ) {
-      imgSat *= 0.7;
+      imgSat *= 0.5;
     }
     
     // Desaturate orange color
     else if(imgHue < 60) {
-      imgSat *= 0.8;
+      imgSat *= 0.7;
     }
     
     // Desaturate yellow color
@@ -42,14 +42,14 @@ void setup() {
     
     // Desaturate blue color
     else if(imgHue > 150 && imgHue < 270) {
-      imgSat *= 0.75;
+      imgSat *= 0.6;
     }
     
     // Update the pixel saturation
     img.pixels[i] = color(imgHue, imgSat, imgBright);   
   }
   
-  // Draw complete desaturated image
+  // Draw desaturated image
   img.updatePixels();
   image(img, 0, 0);
 }
