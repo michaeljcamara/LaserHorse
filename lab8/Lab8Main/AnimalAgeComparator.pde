@@ -1,11 +1,11 @@
 class AnimalAgeComparator implements Comparator<Animal> {
   
   int compare(Animal a1, Animal a2) {
-    float weight1 = a1.getWeight();
-    float weight2 = a2.getWeight();
+    float age1 = a1.getAge();
+    float age2 = a2.getAge();
     
-    // Sort in ascending order based on weight of animals
+    // Sort in ascending order based on age of animals
     // i.e. first element is the lightest animal, last is the heaviest
-    return (int) (weight1 - weight2);
+    return (int) (age1 - age2);
   }
 }

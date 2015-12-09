@@ -1,9 +1,11 @@
-Name,Species,Breed,CoatColor,Weight,Age,Spayed/Neutered?
-Anna,Dog,Beagle,brown,30,,yes
-Betsy,Dog,Beagle,brown,35,,yes
-Carl,Dog,Golden,yellow,70,,no
-Doug,Dog,Doberman,brown,80,,no
-Eliza,Cat,DSH,orange,9,,yes
-Frank,Cat,DSH,grey,7,,no
-Garfield,Cat,DLH,orange,8,,yes
-Heinz,Cat,DMH,black,10,,no
+Name,Species,Breed,CoatColor,Weight,Age,Sex,Spayed/Neutered?
+Anna,Dog,Beagle,brown,30,1,f,yes
+Betsy,Dog,Beagle,brown,35,5,f,yes
+Carl,Dog,Golden Retriever,yellow,70,3,m,no
+Doug,Dog,Doberman,brown,80,2,m,no
+Eliza,Cat,DSH,orange,9,6,f,yes
+Frank,Cat,DSH,grey,7,10,m,no
+Garfield,Cat,DLH,orange,8,4,m,yes
+Heinz,Cat,DMH,black,10,5,m,no
+Ingrid,Dog,Boxer,brown,20,0.3,f,no
+Jack,Dog,Chihuahua,white,5,5,m,yes
