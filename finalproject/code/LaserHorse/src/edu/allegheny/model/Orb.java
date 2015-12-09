@@ -1,32 +1,48 @@
+/****************************************
+ * Michael Camara
+ * Honor Code Pledge: This work is mine unless otherwise cited
+ * CMPSC 382
+ * Final Project: LaserHorse
+ ****************************************/
+
 package edu.allegheny.model;
 
 import java.util.Random;
 
-import edu.allegheny.laserhorse.SecondActivity;
+import edu.allegheny.laserhorse.MainActivity;
 import edu.allegheny.util.MyColors;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.Rect;
 
+// Represents a sort of "balloon" that can be "popped" by lasers.
+// When laser contacts an orb, the user gets a point; when the orb contacts the edge of the screen,
+// the user loses a point; when the orb hits the horse, lose a life
 public class Orb {
 
-	private int x, y, radius;
+	// Current location and radius
+	private float x, y;
+	private int radius;
+	
+	// Custom paint object for this Orb
 	private Paint paint;
 	private int color;
 	
-	public Orb() {
-//		this.x = x;
-//		this.y = y;
+	// Current left-ward speed of this Orb
+	private double speed;
+	
+	// Initialize all starting values
+	public Orb(double speed) {
 		
 		Random rand = new Random();
 		paint = new Paint();
-		
+		this.speed = speed;
 		radius = 50; 
-		x = SecondActivity.getWidth() + radius;
-		y = (int) (SecondActivity.getHeight() * 0.05 + rand.nextInt(SecondActivity.getHeight()) * 0.8);
 		
+		// Randomly start Orb on right side of screen at random Y position
+		x = MainActivity.getWidth() + radius;
+		y = (int) (MainActivity.getHeight() * 0.05 + rand.nextInt(MainActivity.getHeight()) * 0.8);
 		
+		// Change color of the orb randomly
 		switch(rand.nextInt(5)) {
 		case 0:
 			color = MyColors.BRIGHT_YELLOW;
@@ -45,11 +61,11 @@ public class Orb {
 			break;
 		}
 	}
-	
-	public void update(Canvas canvas) {
-		
-		x -= 3;
 
+	// Continually move orb to the left according to given speed/
+	public void update(Canvas canvas) {
+
+		x -= speed;
 		paint.setColor(color);
 		paint.setStyle(Paint.Style.FILL);
 		canvas.drawCircle(x, y, radius, paint);
@@ -60,11 +76,11 @@ public class Orb {
 	}
 	
 	public int getX() {
-		return x;
+		return (int) x;
 	}
 	
 	public int getY() {
-		return y;
+		return (int) y;
 	}
 	
 	public int getRadius() {

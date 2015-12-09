@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="edu.allegheny.firstgame"
+    package="edu.allegheny.laserhorse"
     android:versionCode="1"
     android:versionName="1.0" >
 
@@ -13,21 +13,19 @@
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
+
         <activity
-            android:name="edu.allegheny.laserhorse.SecondActivity"
-            android:label="@string/app_name" >
+            android:name="edu.allegheny.laserhorse.MainActivity"
+            android:label="LaserHorse" 
+            android:orientation="horizontal"
+            android:screenOrientation="landscape">
+            
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name="edu.allegheny.laserhorse.MainActivity"
-            android:label="SecondActivityLabel" 
-            android:orientation="horizontal">
-			
-        </activity>
+        
     </application>
-
+    
 </manifest>

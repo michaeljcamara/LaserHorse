@@ -1,27 +1,32 @@
+/****************************************
+ * Michael Camara
+ * Honor Code Pledge: This work is mine unless otherwise cited
+ * CMPSC 382
+ * Final Project: LaserHorse
+ ****************************************/
 package edu.allegheny.model;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 
-import edu.allegheny.firstgame.R;
-import edu.allegheny.laserhorse.CustomView;
-import edu.allegheny.laserhorse.SecondActivity;
+import edu.allegheny.laserhorse.MainActivity;
 import edu.allegheny.util.CollisionDetector;
 import edu.allegheny.util.MyColors;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
-import android.graphics.Path.FillType;
 import android.graphics.RectF;
-import android.media.MediaPlayer;
-import android.media.SoundPool;
 
+// This class represents a horse that is capable of shooting lasers froms its eyes
 public class Horse {
 	private Canvas canvas;
 	private Paint paint;
+	
+	// Store paths for each segment of the horse's boddy
 	private Path trunk, tail, hindBackLeg, hindBackHoof, hindForeLeg, hindForeHoof, frontBackLeg, frontBackHoof, frontForeLeg, frontForeHoof,
 		neckAndHead, muzzle, mouth;
+	
+	// Create list of all lasers currently on screen
 	private ArrayList<Laser> lasers;
 
 	public Horse() {
@@ -37,6 +42,7 @@ public class Horse {
 		lasers = new ArrayList<Laser>();
 	}
 
+	// Create each component of the horse indidividually
 	public void update(Canvas canvas) {
 		this.canvas = canvas;
 		
@@ -69,6 +75,7 @@ public class Horse {
 
 	}
 	
+	// Create a brand new laser for this effect
 	public void createLaser(Canvas canvas, CollisionDetector detector, int x, int y) {
 		
 		paint.setColor(MyColors.BRIGHT_RED);
@@ -81,13 +88,14 @@ public class Horse {
 		detector.addLaser(laser);
 	}
 	
+	// Update all lasers with new location info
 	public void shootLasers(Canvas canvas) {
 		
 		Iterator<Laser> laserIterator = lasers.iterator();
 		while(laserIterator.hasNext()) {
 			Laser laser = laserIterator.next();
 			
-			if(laser.hasCollided() || laser.getX() > SecondActivity.getWidth()) {
+			if(laser.hasCollided() || laser.getX() > MainActivity.getWidth()) {
 				laserIterator.remove();
 			}
 			else {
@@ -97,6 +105,7 @@ public class Horse {
 		}
 	}
 
+	// Create the indicated part of the body
 	private void createHindBackLeg() {
 
 		// Hind back leg
@@ -348,46 +357,6 @@ public class Horse {
 		mouth.lineTo(1027, 247);
 		mouth.lineTo(1038, 253);
 		mouth.lineTo(1038, 253);
-		
-		
-		
-
-//		for (int i = 0, offset = -10; i < 20; i++, offset += 8) {
-//			// create many repeating hairs
-//			mane = new Path();
-//			
-//			mane.moveTo(709+ offset, 180 - offset);
-//			mane.lineTo(709+ offset, 180 - offset);
-//			mane.lineTo(700+ offset, 205 - offset);
-//			mane.lineTo(711+ offset, 217 - offset);
-//			mane.lineTo(706+ offset, 230 - offset);
-//			mane.lineTo(715+ offset, 237 - offset);
-//			mane.lineTo(712+ offset, 251 - offset);
-//			mane.lineTo(721+ offset, 263 - offset);
-//			
-//			paint.setStrokeWidth(7);
-//			paint.setColor(MyColors.LIGHT_BROWN);
-//			canvas.createPath(mane, paint);
-//		}
-//
-//		// create mane along dorsal neck behind ears
-//		for (int i = 0, offsetX = 150, offsetY = 150; i < 5; i++, offsetX += 8, offsetY += 2) {
-//			// create many repeating hairs
-//			mane = new Path();
-//			
-//			mane.moveTo(709+ offsetX, 180 - offsetY);
-//			mane.lineTo(709+ offsetX, 180 - offsetY);
-//			mane.lineTo(700+ offsetX, 205 - offsetY);
-//			mane.lineTo(711+ offsetX, 217 - offsetY);
-//			mane.lineTo(706+ offsetX, 230 - offsetY);
-//			mane.lineTo(715+ offsetX, 237 - offsetY);
-//			mane.lineTo(712+ offsetX, 251 - offsetY);
-//			mane.lineTo(721+ offsetX, 263 - offsetY);
-//			
-//			paint.setStrokeWidth(5);
-//			paint.setColor(MyColors.LIGHT_BROWN);
-//			canvas.createPath(mane, paint);
-//		}
 		
 	}
 }
