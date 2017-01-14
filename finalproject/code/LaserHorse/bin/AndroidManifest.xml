@@ -18,6 +18,7 @@
             android:name="edu.allegheny.laserhorse.MainActivity"
             android:label="LaserHorse" 
             android:orientation="horizontal"
+            android:theme="@android:style/Theme.Black.NoTitleBar.Fullscreen"
             android:screenOrientation="landscape">
             
             <intent-filter>
