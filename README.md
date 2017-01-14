@@ -10,4 +10,4 @@ This game was originally developed for a class on visual computing, and thus par
 
 Copy the LaserHorse.apk file onto your Android device.  Use a file manager to navigate to the file and install it, then it should appear in your regular app directory.  The game was originally made using Android 6.0, but has been updated to work using up to Android 7.1.
 
-![1](/screenshots/1.png)
+![1](/screenshots/1.PNG)
